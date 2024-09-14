@@ -1,0 +1,33 @@
+--------Binary Tree to DLL-----------
+
+class Solution {
+  private:
+    Node* prev = NULL;  
+
+    void convertToDLL(Node* root, Node*& head) {
+        if (!root) return;
+
+        
+        convertToDLL(root->left, head);
+
+       
+        if (prev == NULL) {
+           
+            head = root;
+        } else {
+           
+            prev->right = root;
+            root->left = prev;
+        }
+        prev = root; 
+
+        convertToDLL(root->right, head);
+    }
+
+  public:
+    Node* bToDLL(Node* root) {
+        Node* head = NULL;
+        convertToDLL(root, head);
+        return head;
+    }
+};
