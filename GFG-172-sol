@@ -1,0 +1,31 @@
+--ques1--
+class Solution {
+  public:
+    int winnerTeam(int N, vector<int> &X, vector<int> &Y, vector<int> &Z) {
+        // code here
+        
+vector<int> m= { *max_element(X.begin(), X.end()),
+                 *max_element(Y.begin(), Y.end()),
+		*max_element(Z.begin(), Z.end()) };
+return distance(m.begin(), max_element(m.begin(), m.end()));
+    }
+};
+---------------------
+
+ques 3--------
+
+class Solution:
+    def cntExotic(self, S: str) -> int:
+        MOD = 10**9 + 7
+        n = len(S)
+        dp = [0] * 26  
+        
+        for char in S:
+            idx = ord(char) - ord('a')
+          
+            new_exotic = sum(dp[:idx + 1]) + 1  
+            new_exotic %= MOD
+            dp[idx] = (dp[idx] + new_exotic) % MOD
+        
+        return sum(dp) % MOD
+--------------
