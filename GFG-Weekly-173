@@ -12,4 +12,80 @@ class Solution:
             b=n-a
             
         return a*b
+=============================================
+ANS 2) MAX SUM
+
+from typing import List
+
+
+class Solution:
+    def maxSum(self, n : int, x : int, arr : List[int]) -> int:
+        # code here
+        set_bit_nums = []
+        unset_bit_nums=[]
+        mask = 1 << (x -1)
+
+        for num in arr:
+
+            if num & mask:
+                set_bit_nums.append(num)
+
+            else:
+                unset_bit_nums.append(num)
+
+        if not set_bit_nums or not unset_bit_nums:
+
+            return -1
+
+
+        max_set =max(set_bit_nums)
+        max_unset = max(unset_bit_nums)
+        
+        return max_set + max_unset
+
+========================================
+ANS 3) Get Count 
+
+class Solution {
+public:
+    long long getCount(int n, vector<vector<int>>& edges, int x, int y) {
+        // Create an adjacency list
+        unordered_map<int, vector<int>> adj;
+        for (const auto& edge : edges) {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+
+        // Calculate subtree sizes using DFS
+        vector<int> subtree_size(n + 1, 0);
+
+        function<int(int, int)> dfs = [&](int node, int parent) {
+            int size = 1;
+            for (int neighbor : adj[node]) {
+                if (neighbor != parent) {
+                    size += dfs(neighbor, node);
+                }
+            }
+            subtree_size[node] = size;
+            return size;
+        };
+
+        dfs(1, -1);
+
+        // Count nodes with subtree sizes x and y
+        int count_x = 0, count_y = 0;
+        for (int i = 1; i <= n; ++i) {
+            if (subtree_size[i] == x) {
+                count_x++;
+            }
+            if (subtree_size[i] == y) {
+                count_y++;
+            }
+        }
+
+        return (long long)count_x * count_y;
+    }
+};
+
+===================================================
             
