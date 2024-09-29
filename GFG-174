@@ -1,0 +1,114 @@
+ANS 1)
+
+class Solution {
+public:
+    int distributeBalls(int n) {
+        const int MOD = 1e9 + 7;
+        
+        // Calculate 2^n % MOD
+        long long totalWays = 1;
+        for (int i = 0; i < n; i++) {
+            totalWays = (totalWays * 2) % MOD;
+        }
+
+        // Valid distributions: totalWays - 2
+        totalWays = (totalWays - 2 + MOD) % MOD; // Ensure non-negative result
+        
+        return totalWays;
+    }
+};
+=============================================
+ANS 4)
+
+class Solution {
+public:
+    struct Node {
+        int l, r, maxLen, leftLen, rightLen;
+        bool isNonDecreasing;
+    };
+    
+    vector<Node> segTree;
+    vector<int> arr;
+    
+    Node combine(const Node &left, const Node &right) {
+        Node res;
+        res.l = left.l;
+        res.r = right.r;
+        
+        res.leftLen = left.leftLen;
+        res.rightLen = right.rightLen;
+        res.isNonDecreasing = left.isNonDecreasing && right.isNonDecreasing && arr[left.r] <= arr[right.l];
+        
+        res.maxLen = max(left.maxLen, right.maxLen);
+        
+        if (arr[left.r] <= arr[right.l]) {
+            if (left.isNonDecreasing) {
+                res.leftLen += right.leftLen;
+            }
+            if (right.isNonDecreasing) {
+                res.rightLen += left.rightLen;
+            }
+            res.maxLen = max(res.maxLen, left.rightLen + right.leftLen);
+        }
+        
+        return res;
+    }
+    
+    void build(int index, int start, int end) {
+        if (start == end) {
+            segTree[index] = {start, end, 1, 1, 1, true};
+        } else {
+            int mid = (start + end) / 2;
+            build(2 * index + 1, start, mid);
+            build(2 * index + 2, mid + 1, end);
+            segTree[index] = combine(segTree[2 * index + 1], segTree[2 * index + 2]);
+        }
+    }
+    
+    void update(int index, int start, int end, int pos, int value) {
+        if (start == end) {
+            arr[pos] = value;
+            segTree[index] = {start, end, 1, 1, 1, true};
+        } else {
+            int mid = (start + end) / 2;
+            if (pos <= mid) {
+                update(2 * index + 1, start, mid, pos, value);
+            } else {
+                update(2 * index + 2, mid + 1, end, pos, value);
+            }
+            segTree[index] = combine(segTree[2 * index + 1], segTree[2 * index + 2]);
+        }
+    }
+    
+    Node query(int index, int start, int end, int l, int r) {
+        if (start > r || end < l) {
+            return {start, end, 0, 0, 0, true};  // Return a dummy node
+        }
+        if (start >= l && end <= r) {
+            return segTree[index];
+        }
+        int mid = (start + end) / 2;
+        Node left = query(2 * index + 1, start, mid, l, r);
+        Node right = query(2 * index + 2, mid + 1, end, l, r);
+        return combine(left, right);
+    }
+    
+    vector<int> longestSubarray(int n, vector<int> &arr, int m, vector<vector<int>> &queries) {
+        this->arr = arr;
+        segTree.resize(4 * n);
+        build(0, 0, n - 1);
+        
+        vector<int> result;
+        for (const auto &q : queries) {
+            if (q[0] == 0) {  // Query type 0: Find longest non-decreasing subarray in range [i, r]
+                int l = q[1], r = q[2];
+                result.push_back(query(0, 0, n - 1, l, r).maxLen);
+            } else if (q[0] == 1) {  // Query type 1: Update the value of arr[i] to x
+                int i = q[1], x = q[2];
+                update(0, 0, n - 1, i, x);
+            }
+        }
+        
+        return result;
+    }
+};
