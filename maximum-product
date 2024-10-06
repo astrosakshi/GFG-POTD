@@ -1,0 +1,37 @@
+--GFG weekly contest 175---6 oct
+
+class Solution {
+  public:
+    long long maximumProduct(int n, vector<int> &arr, int l, int r) {
+        // Convert to 0-based indexing for easier handling
+        l -= 1; 
+        r -= 1;
+        
+        // Initialize maximum and minimum in subarray arr[l:r]
+        int subMax = INT_MIN, subMin = INT_MAX;
+        for (int i = l; i <= r; i++) {
+            subMax = max(subMax, arr[i]);
+            subMin = min(subMin, arr[i]);
+        }
+        
+        // Initialize maximum and minimum in the remaining array
+        int remMax = INT_MIN, remMin = INT_MAX;
+        for (int i = 0; i < l; i++) {
+            remMax = max(remMax, arr[i]);
+            remMin = min(remMin, arr[i]);
+        }
+        for (int i = r + 1; i < n; i++) {
+            remMax = max(remMax, arr[i]);
+            remMin = min(remMin, arr[i]);
+        }
+        
+        // Calculate the maximum product from the combination of the subarray and remaining array
+        long long result = LLONG_MIN;
+        result = max(result, 1LL * subMax * remMax);
+        result = max(result, 1LL * subMax * remMin);
+        result = max(result, 1LL * subMin * remMax);
+        result = max(result, 1LL * subMin * remMin);
+        
+        return result;
+    }
+};
