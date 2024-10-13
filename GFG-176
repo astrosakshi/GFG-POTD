@@ -1,0 +1,45 @@
+gfg 176 answer 2 ----
+
+class Solution {
+ public:
+  int countPalindromicSubstrings(std::string s, int k) {
+    if (k > s.length()) return 0;
+
+    std::unordered_map<char, int> freq;
+    int oddCount = 0;
+    int count = 0;
+
+    for (int i = 0; i < k; ++i) {
+      freq[s[i]]++;
+      if (freq[s[i]] % 2 == 0) {
+        oddCount--;
+      } else {
+        oddCount++;
+      }
+    }
+
+    if (oddCount <= 1) count++;
+
+    for (int i = k; i < s.length(); ++i) {
+      char outChar = s[i - k];
+      freq[outChar]--;
+      if (freq[outChar] % 2 == 0) {
+        oddCount--;
+      } else {
+        oddCount++;
+      }
+
+      char inChar = s[i];
+      freq[inChar]++;
+      if (freq[inChar] % 2 == 0) {
+        oddCount--;
+      } else {
+        oddCount++;
+      }
+
+      if (oddCount <= 1) count++;
+    }
+
+    return count;
+  }
+};
